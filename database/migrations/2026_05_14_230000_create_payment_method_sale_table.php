@@ -12,6 +12,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (! Schema::hasTable('sales') || ! Schema::hasTable('payment_methods')) {
+            return;
+        }
+
         Schema::create('payment_method_sale', function (Blueprint $table) {
             $table->id();
             $table->foreignId('sale_id')->constrained()->cascadeOnDelete();
@@ -20,6 +24,10 @@ return new class extends Migration
 
             $table->unique(['sale_id', 'payment_method_id']);
         });
+
+        if (! Schema::hasColumn('sales', 'payment_method_id')) {
+            return;
+        }
 
         $sales = DB::table('sales')
             ->select('id', 'payment_method_id')

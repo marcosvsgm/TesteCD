@@ -150,73 +150,71 @@ Na listagem de vendas, use o botão `PDF` de qualquer registro. O sistema gera e
 - Parcelas
 - Total da venda
 
-## Publicação com Cloudflare
-
-O Laravel não roda diretamente no Cloudflare Pages como aplicação PHP. Para publicar este projeto em produção, o fluxo recomendado é:
-
-1. Hospedar a aplicação Laravel em um servidor com PHP 8.3+, Composer, Node.js e MySQL.
-2. Configurar o virtual host apontando para a pasta `public/`.
-3. Definir no `.env` de produção:
-
-```env
-APP_ENV=production
-APP_DEBUG=false
-APP_URL=https://seu-dominio.com
-```
-
-4. Instalar dependências e gerar assets:
-
-```bash
-composer install --optimize-autoloader --no-dev
-npm install
-npm run build
-php artisan migrate --seed --force
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
-```
-
-5. Na Cloudflare:
-   - Aponte o DNS do domínio para o IP do servidor
-   - Ative o proxy laranja
-   - Configure SSL/TLS em `Full` ou `Full (strict)`
-   - Se desejar, ative regras de cache e WAF
-
-### Opção com Cloudflare Tunnel
-
-Também é possível publicar usando Cloudflare Tunnel apontando para o servidor Laravel. Nesse cenário:
-
-1. Instale o `cloudflared` no servidor
-2. Autentique no ambiente Cloudflare
-3. Crie um tunnel
-4. Aponte o hostname do domínio para o serviço web local do Laravel ou do seu Nginx/Apache
-
-Exemplo conceitual:
-
-```bash
-cloudflared tunnel create dc-vendas
-cloudflared tunnel route dns dc-vendas app.seu-dominio.com
-cloudflared tunnel run dc-vendas
-```
-
-O ideal é que o tunnel exponha o servidor web que entrega a pasta `public` do Laravel, e não o `php artisan serve` em produção.
-
-## Comandos esperados
-
-```bash
-composer install
-cp .env.example .env
-php artisan key:generate
-php artisan migrate --seed
-npm install
-npm run build
-php artisan serve
-```
-
 ## Link esperado do repositório GitHub
 
 Use um repositório com nome semelhante a:
 
 `https://https://github.com/marcosvsgm/TesteCD
 
+## Docker e Render
 
+Este projeto agora inclui Docker para subir direto no Render usando um unico conteiner.
+
+### Arquivos adicionados
+
+- `Dockerfile`
+- `.dockerignore`
+- `docker/start-container.sh`
+- `render.yaml`
+
+### Como testar local com Docker
+
+```bash
+docker compose up --build
+```
+
+O conteiner sobe por padrao com:
+
+- `DB_CONNECTION=sqlite`
+- banco em `database/database.sqlite`
+- `SESSION_DRIVER=file`
+- `CACHE_STORE=file`
+- `QUEUE_CONNECTION=sync`
+
+Na primeira inicializacao ele:
+
+- cria um `.env` minimo se nao existir
+- prepara a pasta `storage`
+- roda `php artisan migrate --force`
+- inicia a aplicacao em `0.0.0.0:$PORT`
+
+### Deploy no Render
+
+1. Envie o projeto para o GitHub.
+2. No Render, crie um novo `Blueprint` ou `Web Service` apontando para este repositorio.
+3. Se usar `Blueprint`, o Render vai ler o arquivo `render.yaml`.
+4. Se quiser persistencia real de dados em producao, troque o SQLite por um banco externo e defina:
+
+```env
+DB_CONNECTION=pgsql
+DB_HOST=...
+DB_PORT=5432
+DB_DATABASE=...
+DB_USERNAME=...
+DB_PASSWORD=...
+```
+
+### Variaveis importantes no Render
+
+```env
+APP_ENV=production
+APP_DEBUG=false
+APP_KEY=base64:...
+APP_URL=https://seu-app.onrender.com
+RUN_MIGRATIONS=true
+RUN_SEEDER=false
+```
+
+### Observacao importante
+
+O SQLite funciona bem para subir sem dependencias extras, mas no Render o disco do conteiner pode nao ser persistente dependendo do plano e da configuracao. Para producao de verdade, o ideal e usar Postgres ou outro banco gerenciado.
