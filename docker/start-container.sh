@@ -5,6 +5,7 @@ cd /var/www/html
 
 mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache database
 touch database/database.sqlite
+rm -f public/hot
 
 if [ ! -f .env ]; then
     GENERATED_APP_KEY="${APP_KEY:-base64:$(php -r 'echo base64_encode(random_bytes(32));')}"

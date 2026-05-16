@@ -7,7 +7,9 @@
 
     <title>@yield('title', 'Sistema de Vendas') - {{ config('app.name', 'DC Tecnologia Vendas') }}</title>
 
-    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
 <body class="bg-body-tertiary">
     <div id="app">
@@ -85,6 +87,9 @@
         </main>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ asset('js/app.js') }}"></script>
     @stack('scripts')
 </body>
 </html>
