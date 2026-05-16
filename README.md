@@ -32,8 +32,8 @@ O sistema foi pensado para ser simples, organizado e funcional, com foco em:
 1. Clone o repositório:
 
 ```bash
-git clone https://github.com/seu-usuario/dc-tecnologia-vendas.git
-cd dc-tecnologia-vendas
+git https://github.com/marcosvsgm/TesteCD
+cd dc TesteCD
 ```
 
 2. Instale as dependências PHP:
