@@ -22,7 +22,6 @@ return new class extends Migration
             Schema::table('installments', function (Blueprint $table) {
                 $table->foreignId('payment_method_id')
                     ->nullable()
-                    ->after('sale_id')
                     ->constrained()
                     ->restrictOnDelete();
             });

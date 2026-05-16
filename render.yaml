@@ -24,6 +24,6 @@ services:
       - key: RUN_SEEDER
         value: "false"
       - key: DB_CONNECTION
-        value: sqlite
-      - key: DB_DATABASE
-        value: /var/www/html/database/database.sqlite
+        value: pgsql
+      - key: DATABASE_URL
+        sync: false

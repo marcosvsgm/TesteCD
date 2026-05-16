@@ -63,11 +63,11 @@ php artisan key:generate
 5. Configure o banco no arquivo `.env`:
 
 ```env
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
+DB_CONNECTION=pgsql
+DB_HOST=localhost
+DB_PORT=5432
 DB_DATABASE=dc_tecnologia_sales
-DB_USERNAME=root
+DB_USERNAME=postgres
 DB_PASSWORD=
 ```
 
@@ -173,7 +173,7 @@ Este projeto agora inclui Docker para subir direto no Render usando um unico con
 docker compose up --build
 ```
 
-O conteiner sobe por padrao com:
+Para testes locais com Docker, o conteiner sobe por padrao com:
 
 - `DB_CONNECTION=sqlite`
 - banco em `database/database.sqlite`
@@ -188,21 +188,33 @@ Na primeira inicializacao ele:
 - roda `php artisan migrate --force`
 - inicia a aplicacao em `0.0.0.0:$PORT`
 
-### Deploy no Render
+### Deploy no Render com PostgreSQL
 
 1. Envie o projeto para o GitHub.
-2. No Render, crie um novo `Blueprint` ou `Web Service` apontando para este repositorio.
-3. Se usar `Blueprint`, o Render vai ler o arquivo `render.yaml`.
-4. Se quiser persistencia real de dados em producao, troque o SQLite por um banco externo e defina:
+2. No Render, crie o `Web Service` com este repositório.
+3. Crie um banco `PostgreSQL` no Render, de preferencia na mesma regiao do `Web Service`.
+4. Copie a `Internal Database URL` do banco criado.
+5. No `Web Service`, configure:
 
 ```env
 DB_CONNECTION=pgsql
-DB_HOST=...
-DB_PORT=5432
-DB_DATABASE=...
-DB_USERNAME=...
-DB_PASSWORD=...
+DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/DATABASE
 ```
+
+6. Mantenha `RUN_MIGRATIONS=true` para o container executar `php artisan migrate --force` na inicializacao.
+
+Se preferir PostgreSQL por campos individuais:
+
+```env
+DB_CONNECTION=pgsql
+DB_HOST=SEU_HOST_POSTGRES
+DB_PORT=5432
+DB_DATABASE=SEU_BANCO
+DB_USERNAME=SEU_USUARIO
+DB_PASSWORD=SUA_SENHA
+```
+
+Nao use `DB_HOST=127.0.0.1` em producao no Render, porque nao existe PostgreSQL local dentro do container.
 
 ### Variaveis importantes no Render
 
@@ -211,10 +223,12 @@ APP_ENV=production
 APP_DEBUG=false
 APP_KEY=base64:...
 APP_URL=https://seu-app.onrender.com
+DB_CONNECTION=pgsql
+DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/DATABASE
 RUN_MIGRATIONS=true
 RUN_SEEDER=false
 ```
 
 ### Observacao importante
 
-O SQLite funciona bem para subir sem dependencias extras, mas no Render o disco do conteiner pode nao ser persistente dependendo do plano e da configuracao. Para producao de verdade, o ideal e usar Postgres ou outro banco gerenciado.
+Para o Render, o deploy foi preparado para usar somente PostgreSQL. Se voce tiver dados antigos em MySQL e quiser levar esses dados para o Postgres do Render, eu ainda nao migrei os dados em si, porque isso exige acesso ao banco MySQL de origem e ao Postgres de destino.

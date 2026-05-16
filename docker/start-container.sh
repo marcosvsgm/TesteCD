@@ -8,6 +8,8 @@ touch database/database.sqlite
 
 if [ ! -f .env ]; then
     GENERATED_APP_KEY="${APP_KEY:-base64:$(php -r 'echo base64_encode(random_bytes(32));')}"
+    DB_CONNECTION_VALUE="${DB_CONNECTION:-sqlite}"
+    DB_DATABASE_VALUE="${DB_DATABASE:-/var/www/html/database/database.sqlite}"
 
     cat > .env <<EOF
 APP_NAME="DC Tecnologia Vendas"
@@ -19,8 +21,13 @@ LOG_CHANNEL=${LOG_CHANNEL:-stderr}
 SESSION_DRIVER=${SESSION_DRIVER:-file}
 CACHE_STORE=${CACHE_STORE:-file}
 QUEUE_CONNECTION=${QUEUE_CONNECTION:-sync}
-DB_CONNECTION=${DB_CONNECTION:-sqlite}
-DB_DATABASE=${DB_DATABASE:-/var/www/html/database/database.sqlite}
+DB_CONNECTION=${DB_CONNECTION_VALUE}
+DB_DATABASE=${DB_DATABASE_VALUE}
+DB_HOST=${DB_HOST:-}
+DB_PORT=${DB_PORT:-}
+DB_USERNAME=${DB_USERNAME:-}
+DB_PASSWORD=${DB_PASSWORD:-}
+DB_URL=${DB_URL:-${DATABASE_URL:-}}
 EOF
 
     export APP_KEY="${GENERATED_APP_KEY}"
